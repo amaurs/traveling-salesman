@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import * as THREE from 'three-full';
-import AnaglyphEffect from 'three-anaglypheffect';
 
 class Cube extends Component{
   componentDidMount() {
@@ -19,7 +18,7 @@ class Cube extends Component{
     this.renderer.setClearColor(0xffffff, 1.0)
     this.renderer.setSize(width, height)
 
-    //this.effect = new AnaglyphEffect(this.renderer, focalLength, width, height);
+    //this.effect = new THREE.AnaglyphEffect(this.renderer, focalLength, width, height);
  
 
     this.mount.appendChild(this.renderer.domElement)
