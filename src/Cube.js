@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
+import AnaglyphEffect from 'three-anaglypheffect';
 
 class Cube extends Component{
   componentDidMount() {
@@ -7,13 +8,19 @@ class Cube extends Component{
     const height = this.mount.clientHeight
     const geometry = new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1));
     const material = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
+    
+
 
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000 )
     this.camera.position.z = 4
     this.renderer = new THREE.WebGLRenderer({antialias: true})
-    this.renderer.setClearColor('#ffffff')
+    this.renderer.setClearColor(0xffffff, 1.0)
     this.renderer.setSize(width, height)
+
+    this.effect = new AnaglyphEffect( this.renderer );
+    this.effect.setSize( width, height );
+
     this.mount.appendChild(this.renderer.domElement)
     this.cube = new THREE.LineSegments(geometry, material)
     this.scene.add(this.cube)
@@ -43,7 +50,7 @@ class Cube extends Component{
   }
 
   renderScene = () => {
-    this.renderer.render(this.scene, this.camera)
+    this.effect.render(this.scene, this.camera)
   }
 
   render() {
