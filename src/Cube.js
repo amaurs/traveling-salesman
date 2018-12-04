@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as THREE from 'three-full';
+import AnaglyphSVGEffect from './AnaglyphSVGEffect.js';
 
 class Cube extends Component{
   componentDidMount() {
@@ -14,9 +15,12 @@ class Cube extends Component{
     this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000 )
     this.camera.position.z = 4
     //this.renderer = new THREE.WebGLRenderer({antialias: true})
-    this.renderer = new THREE.SVGRenderer()
-    this.renderer.setClearColor(0xffffff, 1.0)
-    this.renderer.setSize(width, height)
+    this.renderer = new THREE.SVGRenderer();
+    
+    this.renderer.setClearColor(0xff0000, 1.0);
+    this.renderer.setSize(width, height);
+
+    this.effect = new AnaglyphSVGEffect(this.renderer, width, height);
 
     //this.effect = new THREE.AnaglyphEffect(this.renderer, focalLength, width, height);
  
@@ -50,7 +54,7 @@ class Cube extends Component{
   }
 
   renderScene = () => {
-    this.renderer.render(this.scene, this.camera)
+    this.effect.render(this.scene, this.camera)
   }
 
   render() {
