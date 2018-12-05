@@ -6,6 +6,10 @@ class AnaglyphSVGRenderer {
     this.domElement = this._svg;
 
 
+    this._stereo = new THREE.StereoCamera();
+    this._camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+
+
     this._clipBox = new THREE.Box2();
     this._elemBox = new THREE.Box2();
 
@@ -25,6 +29,8 @@ class AnaglyphSVGRenderer {
     this._normalViewMatrix = new THREE.Matrix3();
 
     this.setSize(width, height);
+
+    this.autoClear = true;
 
     this.info = {
 
@@ -115,6 +121,8 @@ class AnaglyphSVGRenderer {
 
     let background = scene.background;
 
+  
+
     if ( background && background.isColor ) {
       
       this.removeChildNodes();
@@ -132,18 +140,27 @@ class AnaglyphSVGRenderer {
     this._viewMatrix.copy( camera.matrixWorldInverse );
     this._viewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, this._viewMatrix );
 
-    let _renderData = this._projector.projectScene( scene, camera, this.sortObjects, this.sortElements );
-    let _elements = _renderData.elements;
+    scene.updateMatrixWorld();
+    if ( camera.parent === null ) 
+      camera.updateMatrixWorld();
+    
+    this._stereo.update(camera);
 
-    this._normalViewMatrix.getNormalMatrix( camera.matrixWorldInverse );
+    let _renderDataL = this._projector.projectScene( scene, this._stereo.cameraL, this.sortObjects, this.sortElements );
+    
+    let _elements = _renderDataL.elements;
+
+    this._normalViewMatrix.getNormalMatrix( this._stereo.cameraL.matrixWorldInverse );
 
 
     this._currentPath = '';
     this._currentStyle = '';
 
-    for ( var e = 0, el = _elements.length; e < el; e ++ ) {
-      var element = _elements[ e ];
-      var material = element.material;
+    for ( let e = 0, el = _elements.length; e < el; e ++ ) {
+      let element = _elements[ e ];
+      let material = element.material;
+
+      material.color = new THREE.Color(1,0,0);
 
       if ( material === undefined || material.opacity === 0 ) continue;
 
@@ -163,8 +180,38 @@ class AnaglyphSVGRenderer {
 
     }
 
+    let _renderDataR = this._projector.projectScene( scene, this._stereo.cameraR, this.sortObjects, this.sortElements );
+
+    _elements = _renderDataR.elements;
+    this._normalViewMatrix.getNormalMatrix( this._stereo.cameraL.matrixWorldInverse );
+
+    for ( let e = 0, el = _elements.length; e < el; e ++ ) {
+      let element = _elements[ e ];
+      let material = element.material;
+
+      material.color = new THREE.Color(0,0,1);
+
+      if ( material === undefined || material.opacity === 0 ) continue;
+
+      this._elemBox.makeEmpty();
+
+      if( element instanceof THREE.RenderableLine ) {
+        this._v1 = element.v1; this._v2 = element.v2;
+        this._v1.positionScreen.x *= this._svgWidthHalf; 
+        this._v1.positionScreen.y *= - this._svgHeightHalf;
+        this._v2.positionScreen.x *= this._svgWidthHalf; 
+        this._v2.positionScreen.y *= - this._svgHeightHalf;
+        this._elemBox.setFromPoints([ this._v1.positionScreen, this._v2.positionScreen ]);
+        if(this._clipBox.intersectsBox(this._elemBox) === true) {
+          this.renderLine(this._v1, this._v2, element, material);
+        }
+      } 
+
+    }
 
     this.flushPath(); // just to flush last svg:path
+
+
 
 
     scene.traverseVisible(function(object) {
