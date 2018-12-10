@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import * as THREE from 'three-full';
 import AnaglyphSVGRenderer from './AnaglyphSVGRenderer.js';
+import util from './util.js'
 
 class Cube extends Component{
   componentDidMount() {
     const width = this.mount.clientWidth
     const height = this.mount.clientHeight
     const geometry = new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1));
-    const material = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
+    const material = new THREE.LineBasicMaterial({ color: 0x000000, 
+                                                   linewidth: 2,
+                                                   opacity: 1 });
     const focalLength = 1000;
 
 
@@ -20,10 +23,55 @@ class Cube extends Component{
  
 
     this.mount.appendChild(this.renderer.domElement)
-    this.cube = new THREE.LineSegments(geometry, material)
-    this.scene.add(this.cube)
+    this.cube = new THREE.LineSegments(geometry, material);
+
+
+
+
+
+    let n = 100;
+
+
+
+    const vertices = [];
+
+
+
+    let seed = util.createRandomUnitVector();
+
+    console.log(seed);
+    let phi = Math.random() * Math.PI;
+    let theta = Math.random() * Math.PI * 2;
+    let factor = 10;
+
+    seed = new THREE.Vector3().setFromSphericalCoords(1.0, phi, theta);
+
+    [...Array(n)].forEach(function(_, i) {
+
+
+      
+      vertices.push(seed.x, seed.y, seed.z);
+
+      let newPhi = Math.random() * factor;
+      let newTheta = Math.random() * factor * 2;
+
+      let newSeed = new THREE.Vector3().setFromSphericalCoords(1.0, newPhi, newTheta);
+
+      seed = newSeed;
+
+    });
+
+    let geometry2 = new THREE.BufferGeometry();
+        geometry2.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+    this.line = new THREE.Line( geometry2, material );
+          
+    this.scene.add( this.line );
+    //this.scene.add(this.cube)
     this.start()
   }
+
+
 
   componentWillUnmount() {
     this.stop()
@@ -41,8 +89,8 @@ class Cube extends Component{
   }
 
   animate = () => {
-    this.cube.rotation.x += 0.01
-    this.cube.rotation.y += 0.01
+    this.line.rotation.x += 0.01
+    this.line.rotation.y += 0.01
     this.renderScene()
     this.frameId = window.requestAnimationFrame(this.animate)
   }

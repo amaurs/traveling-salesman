@@ -183,7 +183,7 @@ class AnaglyphSVGRenderer {
     let _renderDataR = this._projector.projectScene( scene, this._stereo.cameraR, this.sortObjects, this.sortElements );
 
     _elements = _renderDataR.elements;
-    this._normalViewMatrix.getNormalMatrix( this._stereo.cameraL.matrixWorldInverse );
+    this._normalViewMatrix.getNormalMatrix( this._stereo.cameraR.matrixWorldInverse );
 
     for ( let e = 0, el = _elements.length; e < el; e ++ ) {
       let element = _elements[ e ];
@@ -208,7 +208,37 @@ class AnaglyphSVGRenderer {
       } 
 
     }
+    /**
+    let _render = this._projector.projectScene( scene, camera, this.sortObjects, this.sortElements );
 
+    _elements = _render.elements;
+    this._normalViewMatrix.getNormalMatrix( camera.matrixWorldInverse );
+
+    for ( let e = 0, el = _elements.length; e < el; e ++ ) {
+      let element = _elements[ e ];
+      let material = element.material;
+
+      material.color = new THREE.Color(0,0,0);
+      material.opacity = 0.9;
+
+      if ( material === undefined || material.opacity === 0 ) continue;
+
+      this._elemBox.makeEmpty();
+
+      if( element instanceof THREE.RenderableLine ) {
+        this._v1 = element.v1; this._v2 = element.v2;
+        this._v1.positionScreen.x *= this._svgWidthHalf; 
+        this._v1.positionScreen.y *= - this._svgHeightHalf;
+        this._v2.positionScreen.x *= this._svgWidthHalf; 
+        this._v2.positionScreen.y *= - this._svgHeightHalf;
+        this._elemBox.setFromPoints([ this._v1.positionScreen, this._v2.positionScreen ]);
+        if(this._clipBox.intersectsBox(this._elemBox) === true) {
+          this.renderLine(this._v1, this._v2, element, material);
+        }
+      } 
+
+    }
+    **/
     this.flushPath(); // just to flush last svg:path
 
 
