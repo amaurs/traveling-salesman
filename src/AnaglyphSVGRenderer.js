@@ -52,6 +52,8 @@ class AnaglyphSVGRenderer {
       case "low": 
         this._quality = 0; 
         break;
+      default:
+        break;
     }
   }
 
@@ -250,7 +252,7 @@ class AnaglyphSVGRenderer {
         this._vector3.setFromMatrixPosition( object.matrixWorld );
         this._vector3.applyMatrix4(this._viewProjectionMatrix );
 
-        let x = this._vector3.x *this. _svgWidthHalf;
+        let x = this._vector3.x * this._svgWidthHalf;
         let y = - this._vector3.y * this._svgHeightHalf;
 
         let node = object.node;
@@ -298,7 +300,7 @@ class AnaglyphSVGRenderer {
   getPathNode(id) {
     if(this._svgPathPool[id] == null ) {
       this._svgPathPool[id] = document.createElementNS( 'http://www.w3.org/2000/svg', 'path' );
-      if(this._quality == 0) {
+      if(this._quality === 0) {
         this._svgPathPool[id].setAttribute( 'shape-rendering', 'crispEdges' ); //optimizeSpeed
       }
       return this._svgPathPool[id];

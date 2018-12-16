@@ -1,42 +1,64 @@
 import React, { Component } from 'react';
 import * as THREE from 'three-full';
 import AnaglyphSVGRenderer from './AnaglyphSVGRenderer.js';
-import util from './util.js'
+//import util from './util.js'
 
 class Cube extends Component{
+
+
+  constructor(props) {
+    super(props);
+    this.state = {
+        externalData: null,
+    };
+  }
+
+
   componentDidMount() {
-    const width = this.mount.clientWidth
-    const height = this.mount.clientHeight
-    const geometry = new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1));
-    const material = new THREE.LineBasicMaterial({ color: 0x000000, 
-                                                   linewidth: 2,
-                                                   opacity: 1 });
-    const focalLength = 1000;
 
 
-    this.scene = new THREE.Scene()
-    this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000 )
-    this.camera.position.z = 4
-    this.renderer = new AnaglyphSVGRenderer(width, height);
+    (async () => {
+      
+      const rawResponse = await fetch('http://192.168.42.14:5000/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({number: 500})
+      });
+
+
+        const vertices = await rawResponse.json();
+      
+        const width = this.mount.clientWidth
+        const height = this.mount.clientHeight
+        //onst geometry = new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1));
+        const material = new THREE.LineBasicMaterial({ color: 0x000000, 
+                                                       linewidth: 2,
+                                                       opacity: 1 });
+        //const focalLength = 1000;
     
-    this.renderer.setClearColor(0xffffff, 1.0);
- 
-
-    this.mount.appendChild(this.renderer.domElement)
-    this.cube = new THREE.LineSegments(geometry, material);
-
-
-
-
-
-    let n = 100;
+    
+        this.scene = new THREE.Scene()
+        this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000 )
+        this.camera.position.z = 4
+        this.renderer = new AnaglyphSVGRenderer(width, height);
+        this.renderer.setClearColor(0xffffff, 1.0);
+        this.mount.appendChild(this.renderer.domElement)
+        //this.cube = new THREE.LineSegments(geometry, material);
+        let geometry = new THREE.BufferGeometry();
 
 
+        geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
-    const vertices = [];
+        this.line = new THREE.Line( geometry, material );
+              
+        this.scene.add( this.line );
+        //this.scene.add(this.cube)
+        this.start()
+    })();
 
-
-
+    /**
     let seed = util.createRandomUnitVector();
 
     console.log(seed);
@@ -44,6 +66,7 @@ class Cube extends Component{
     let theta = Math.random() * Math.PI * 2;
     let factor = 10;
 
+   
     seed = new THREE.Vector3().setFromSphericalCoords(1.0, phi, theta);
 
     [...Array(n)].forEach(function(_, i) {
@@ -61,14 +84,11 @@ class Cube extends Component{
 
     });
 
-    let geometry2 = new THREE.BufferGeometry();
-        geometry2.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    **/
 
-    this.line = new THREE.Line( geometry2, material );
-          
-    this.scene.add( this.line );
-    //this.scene.add(this.cube)
-    this.start()
+
+
+    
   }
 
 
@@ -91,7 +111,7 @@ class Cube extends Component{
   animate = () => {
     this.line.rotation.x += 0.01
     this.line.rotation.y += 0.01
-    this.renderScene()
+    this.renderScene();
     this.frameId = window.requestAnimationFrame(this.animate)
   }
 
