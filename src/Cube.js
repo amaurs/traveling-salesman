@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as THREE from 'three-full';
 import AnaglyphSVGRenderer from './AnaglyphSVGRenderer.js';
-//import util from './util.js'
+import './Cube.css'
 
 class Cube extends Component{
 
@@ -24,7 +24,7 @@ class Cube extends Component{
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({number: 500})
+        body: JSON.stringify({number: 3000})
       });
 
 
@@ -41,14 +41,14 @@ class Cube extends Component{
     
         this.scene = new THREE.Scene()
         this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000 )
-        this.camera.position.z = 4
+        this.camera.position.z = 5
         this.renderer = new AnaglyphSVGRenderer(width, height);
-        this.renderer.setClearColor(0xffffff, 1.0);
+        this.renderer.setClearColor(0xffffff, 0.0);
         this.mount.appendChild(this.renderer.domElement)
         //this.cube = new THREE.LineSegments(geometry, material);
         let geometry = new THREE.BufferGeometry();
 
-
+        //debugger;
         geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
         this.line = new THREE.Line( geometry, material );
@@ -56,6 +56,8 @@ class Cube extends Component{
         this.scene.add( this.line );
         //this.scene.add(this.cube)
         this.start()
+
+        this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
     })();
 
     /**
@@ -109,8 +111,8 @@ class Cube extends Component{
   }
 
   animate = () => {
-    this.line.rotation.x += 0.01
-    this.line.rotation.y += 0.01
+    //this.line.rotation.x += 0.01
+    //this.line.rotation.y += 0.01
     this.renderScene();
     this.frameId = window.requestAnimationFrame(this.animate)
   }
@@ -122,7 +124,7 @@ class Cube extends Component{
   render() {
     return(
       <div
-        style={{ width: '800px', height: '800px' }}
+        className="Cube"
         ref={(mount) => { this.mount = mount }}
       />
     )

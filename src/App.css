@@ -14,7 +14,15 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: black;
+  border-color: red;
+  border-width: 1px;
+  background-color: white;
+
+}
+
+.App-button {
+  z-index: 2;
 }
 
 .App-link {
