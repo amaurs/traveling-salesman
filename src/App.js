@@ -28,9 +28,12 @@ class App extends Component {
 
   handleSave(event) {
     let serializer = new XMLSerializer();
-    let source = serializer.serializeToString(this.cube.current.mount.childNodes[0])
-    console.log(this.cube.current.mount.innerHTML);
-    download("cube.svg", source)
+    let container = this.cube.current.mount.childNodes[0];
+
+    let source = serializer.serializeToString(container.childNodes[0]);
+    download("cube-left.svg", source)
+    source = serializer.serializeToString(container.childNodes[1])
+    download("cube_right.svg", source)
 
   }
 
