@@ -148,14 +148,15 @@ class AnaglyphSVGRenderer {
       this._elemBox.makeEmpty();
 
       if( element instanceof THREE.RenderableLine ) {
-        this._v1 = element.v1; this._v2 = element.v2;
-        this._v1.positionScreen.x *= this._svgWidthHalf; 
-        this._v1.positionScreen.y *= - this._svgHeightHalf;
-        this._v2.positionScreen.x *= this._svgWidthHalf; 
-        this._v2.positionScreen.y *= - this._svgHeightHalf;
-        this._elemBox.setFromPoints([ this._v1.positionScreen, this._v2.positionScreen ]);
+        let _v1 = element.v1; 
+        let _v2 = element.v2;
+        _v1.positionScreen.x *= this._svgWidthHalf; 
+        _v1.positionScreen.y *= - this._svgHeightHalf;
+        _v2.positionScreen.x *= this._svgWidthHalf; 
+        _v2.positionScreen.y *= - this._svgHeightHalf;
+        this._elemBox.setFromPoints([ _v1.positionScreen, _v2.positionScreen ]);
         if(this._clipBox.intersectsBox(this._elemBox) === true) {
-          this.renderLine(this._v1, this._v2, element, material, container);
+          this.renderLine(_v1, _v2, element, material, container);
         }
       } 
     }
@@ -214,7 +215,7 @@ class AnaglyphSVGRenderer {
 
     scene.traverseVisible(function(object) {
       if ( object instanceof THREE.SVGObject ) {
-
+        debugger;
         this._vector3.setFromMatrixPosition( object.matrixWorld );
         this._vector3.applyMatrix4(this._viewProjectionMatrix );
 
