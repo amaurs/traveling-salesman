@@ -4,10 +4,12 @@ class AnaglyphSVGRenderer {
   constructor(width, height) {
     this.domElement = document.createElement("div"); 
 
-    this._svg_left = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this._svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+    this._svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     this._svg_right = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     
-    this.domElement.appendChild(this._svg_left);
+    this.domElement.appendChild(this._svg);
     this.domElement.appendChild(this._svg_right);
 
 
@@ -80,13 +82,9 @@ class AnaglyphSVGRenderer {
 
     this._pathCount = 0;
 
-    this._svg_left.setAttribute('viewBox', (- this._svgWidthHalf ) + ' ' + (- this._svgHeightHalf ) + ' ' + this._svgWidth + ' ' + this._svgHeight);
-    this._svg_left.setAttribute('width', this._svgWidth );
-    this._svg_left.setAttribute('height', this._svgHeight );
-
-    this._svg_right.setAttribute('viewBox', (- this._svgWidthHalf ) + ' ' + (- this._svgHeightHalf ) + ' ' + this._svgWidth + ' ' + this._svgHeight);
-    this._svg_right.setAttribute('width', this._svgWidth );
-    this._svg_right.setAttribute('height', this._svgHeight );
+    this._svg.setAttribute('viewBox', (- this._svgWidthHalf ) + ' ' + (- this._svgHeightHalf ) + ' ' + this._svgWidth + ' ' + this._svgHeight);
+    this._svg.setAttribute('width', this._svgWidth );
+    this._svg.setAttribute('height', this._svgHeight );
 
     this._clipBox.min.set( - this._svgWidthHalf, - this._svgHeightHalf );
     this._clipBox.max.set( this._svgWidthHalf, this._svgHeightHalf );
@@ -98,8 +96,7 @@ class AnaglyphSVGRenderer {
   };
 
   removeChildNodes() {
-    this.removeChildNodesGeneral(this._svg_left);
-    this.removeChildNodesGeneral(this._svg_right);
+    this.removeChildNodesGeneral(this._svg);
   }
 
   removeChildNodesGeneral(container) {
@@ -123,8 +120,7 @@ class AnaglyphSVGRenderer {
 
   clear() {
     this.removeChildNodes();
-    this._svg_left.style.backgroundColor = this.getSvgColor(this._clearColor, this._clearAlpha);
-    this._svg_right.style.backgroundColor = this.getSvgColor(this._clearColor, this._clearAlpha);
+    this._svg.style.backgroundColor = this.getSvgColor(this._clearColor, this._clearAlpha);
   }
 
   renderCamera(_elements, camera, color, container) {
@@ -179,8 +175,7 @@ class AnaglyphSVGRenderer {
     if ( background && background.isColor ) {
       
       this.removeChildNodes();
-      this._svg_left.style.backgroundColor = this.getSvgColor( background );
-      this._svg_right.style.backgroundColor = this.getSvgColor( background );
+      this._svg.style.backgroundColor = this.getSvgColor( background );
 
     } else if ( this.autoClear === true ) {
       
@@ -202,20 +197,20 @@ class AnaglyphSVGRenderer {
 
     let _renderDataL = this._projector.projectScene( scene, this._stereo.cameraL, this.sortObjects, this.sortElements );
     let _elements = _renderDataL.elements;
-    this.renderCamera(_elements, this._stereo.cameraL, new THREE.Color(1,0,0), this._svg_left);
-    this.flushPath(this._svg_left);
+    this.renderCamera(_elements, this._stereo.cameraL, new THREE.Color(1,0,0), this._svg);
+    this.flushPath(this._svg);
     
     let _renderDataR = this._projector.projectScene( scene, this._stereo.cameraR, this.sortObjects, this.sortElements );
     _elements = _renderDataR.elements;
-    this.renderCamera(_elements, this._stereo.cameraR, new THREE.Color(0,0,1), this._svg_right);
-    this.flushPath(this._svg_right);
+    this.renderCamera(_elements, this._stereo.cameraR, new THREE.Color(0,0,1), this._svg);
+    this.flushPath(this._svg);
 
 
 
 
     scene.traverseVisible(function(object) {
       if ( object instanceof THREE.SVGObject ) {
-        debugger;
+
         this._vector3.setFromMatrixPosition( object.matrixWorld );
         this._vector3.applyMatrix4(this._viewProjectionMatrix );
 
@@ -225,8 +220,7 @@ class AnaglyphSVGRenderer {
         let node = object.node;
         node.setAttribute( 'transform', 'translate(' + x + ',' + y + ')' );
 
-        //this._svg_left.appendChild( node );
-        //this._svg_right.appendChild( node );
+        this._svg.appendChild( node );
 
       }
 
