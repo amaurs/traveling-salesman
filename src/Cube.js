@@ -3,6 +3,8 @@ import * as THREE from 'three-full';
 import AnaglyphSVGRenderer from './AnaglyphSVGRenderer.js';
 import './Cube.css'
 
+const apiHost = process.env.REACT_APP_API_HOST;
+
 class Cube extends Component{
 
 
@@ -19,12 +21,12 @@ class Cube extends Component{
 
     (async () => {
       
-      const rawResponse = await fetch('http://192.168.42.14:5000/', {
+      const rawResponse = await fetch(apiHost, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({number: 3000})
+        body: JSON.stringify({point_set:"plane", n_cities: 1000})
       });
 
 
